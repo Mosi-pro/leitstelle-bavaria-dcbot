@@ -1,0 +1,18 @@
+# Konfiguration & Geheimnisse
+.env
+.env.*
+!.env.example
+# Laufzeitdaten
+backups/
+data/
+nginx/certs/
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+# Node
+web/node_modules/
+web/dist/
