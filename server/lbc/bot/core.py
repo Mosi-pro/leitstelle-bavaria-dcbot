@@ -9,6 +9,7 @@ import sys
 import time
 from typing import Awaitable, Callable, Optional
 
+import aiohttp
 import discord
 from discord.ext import commands
 from sqlalchemy.orm import Session
@@ -351,6 +352,17 @@ def main() -> None:
         sys.exit("FEHLER: Der Discord Bot Token ist ungültig.")
     except discord.PrivilegedIntentsRequired:
         sys.exit("FEHLER: Bitte im Discord Developer Portal die Intents 'Server Members' und 'Message Content' aktivieren.")
+    except (OSError, aiohttp.ClientError, asyncio.TimeoutError) as exc:
+        msg = f"Discord ist nicht erreichbar ({type(exc).__name__}: {exc}). Internetverbindung/DNS prüfen – neuer Versuch durch Docker."
+        log.error(msg)
+        try:
+            with session_scope() as s:
+                from ..services.base import record_error
+                record_error(s, "bot", msg)
+        except Exception:  # noqa: BLE001
+            pass
+        time.sleep(15)  # Docker startet den Bot anschließend neu (restart: unless-stopped)
+        sys.exit(f"FEHLER: {msg}")
     finally:
         try:
             with session_scope() as s:

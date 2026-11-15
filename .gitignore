@@ -5,7 +5,8 @@
 # Laufzeitdaten
 backups/
 data/
-nginx/certs/
+nginx/certs/*
+!nginx/certs/.gitkeep
 # Python
 __pycache__/
 *.pyc

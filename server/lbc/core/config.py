@@ -5,15 +5,25 @@ Datenbank (Systemeinstellungen) gepflegt. Es gibt keine fest codierten Zugangsda
 """
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from typing import Optional
 
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    # Die (im Container eingebundene) .env-Datei hat Vorrang vor Umgebungsvariablen, damit Änderungen
+    # aus dem Webpanel (z. B. Datenbankverbindung) nach einem Container-Neustart wirksam werden.
+    model_config = SettingsConfigDict(env_file=os.environ.get("ENV_FILE_PATH", ".env"), env_file_encoding="utf-8",
+                                      extra="ignore")
+
+    @classmethod
+    def settings_customise_sources(cls, settings_cls, init_settings: PydanticBaseSettingsSource,
+                                   env_settings: PydanticBaseSettingsSource, dotenv_settings: PydanticBaseSettingsSource,
+                                   file_secret_settings: PydanticBaseSettingsSource):
+        return init_settings, dotenv_settings, env_settings, file_secret_settings
 
     # --- STRATO MySQL -------------------------------------------------------
     db_host: str = Field("", alias="DB_HOST")

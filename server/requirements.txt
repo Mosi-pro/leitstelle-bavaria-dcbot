@@ -1,0 +1,11 @@
+# Laufzeit-Abhängigkeiten (getestete Versionen)
+fastapi==0.163.0
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.1.8
+PyMySQL==1.2.4
+cryptography==50.0.1
+alembic==1.20.1
+pydantic==2.13.5
+pydantic-settings==2.16.3
+httpx==0.28.1
+discord.py==2.7.1
